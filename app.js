@@ -1074,3 +1074,122 @@ document.querySelectorAll("[data-current-year]").forEach((element) => {
 document.querySelectorAll("[data-current-year]").forEach((element) => {
   element.textContent = new Date().getFullYear();
 });
+
+/* =========================================
+   TRAINING MODAL
+========================================= */
+
+const trainingModal = document.querySelector("[data-training-modal]");
+
+if (trainingModal) {
+  const trainingOpenButtons = document.querySelectorAll("[data-training-open]");
+  const trainingCloseButtons = trainingModal.querySelectorAll(
+    "[data-training-close]",
+  );
+
+  let trainingModalLastFocus = null;
+
+  function setTrainingModalState(isOpen) {
+    trainingModal.classList.toggle("is-open", isOpen);
+    trainingModal.setAttribute("aria-hidden", String(!isOpen));
+    document.body.classList.toggle("modal-open", isOpen);
+
+    if (isOpen) {
+      trainingModalLastFocus = document.activeElement;
+
+      setTimeout(() => {
+        trainingModal.querySelector(".review-modal__close")?.focus();
+      }, 100);
+    } else {
+      trainingModalLastFocus?.focus();
+    }
+  }
+
+  trainingOpenButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setTrainingModalState(true);
+    });
+  });
+
+  trainingCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setTrainingModalState(false);
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && trainingModal.classList.contains("is-open")) {
+      setTrainingModalState(false);
+    }
+  });
+}
+
+/* =========================================
+   BLOG MODAL
+========================================= */
+
+const blogModal = document.querySelector("[data-blog-modal]");
+
+if (blogModal) {
+  const blogOpenButtons = document.querySelectorAll("[data-blog-open]");
+  const blogCloseButtons = blogModal.querySelectorAll("[data-blog-close]");
+
+  const blogModalCategory = blogModal.querySelector(
+    "[data-blog-modal-category]",
+  );
+
+  const blogModalTitle = blogModal.querySelector("[data-blog-modal-title]");
+  const blogModalText = blogModal.querySelector("[data-blog-modal-text]");
+
+  let blogModalLastFocus = null;
+
+  function setBlogModalState(isOpen) {
+    blogModal.classList.toggle("is-open", isOpen);
+    blogModal.setAttribute("aria-hidden", String(!isOpen));
+    document.body.classList.toggle("modal-open", isOpen);
+
+    if (isOpen) {
+      blogModalLastFocus = document.activeElement;
+
+      window.setTimeout(() => {
+        blogModal.querySelector(".review-modal__close")?.focus();
+      }, 100);
+    } else {
+      blogModalLastFocus?.focus();
+    }
+  }
+
+  blogOpenButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const card = button.closest("[data-blog-card]");
+
+      if (!card) return;
+
+      if (blogModalCategory) {
+        blogModalCategory.textContent = card.dataset.blogCategory || "Блог";
+      }
+
+      if (blogModalTitle) {
+        blogModalTitle.textContent = card.dataset.blogTitle || "";
+      }
+
+      if (blogModalText) {
+        blogModalText.textContent = card.dataset.blogContent || "";
+      }
+
+      setBlogModalState(true);
+    });
+  });
+
+  blogCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setBlogModalState(false);
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && blogModal.classList.contains("is-open")) {
+      setBlogModalState(false);
+    }
+  });
+}
