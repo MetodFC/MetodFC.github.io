@@ -1193,3 +1193,164 @@ if (blogModal) {
     }
   });
 }
+
+/* =========================================
+   COURSES MODAL
+========================================= */
+
+const coursesModal = document.querySelector("[data-courses-modal]");
+
+if (coursesModal) {
+  const coursesOpenButtons = document.querySelectorAll("[data-courses-open]");
+
+  const coursesCloseButtons = coursesModal.querySelectorAll(
+    "[data-courses-close]",
+  );
+
+  let coursesModalLastFocus = null;
+
+  function setCoursesModalState(isOpen) {
+    coursesModal.classList.toggle("is-open", isOpen);
+
+    coursesModal.setAttribute("aria-hidden", String(!isOpen));
+
+    document.body.classList.toggle("modal-open", isOpen);
+
+    if (isOpen) {
+      coursesModalLastFocus = document.activeElement;
+
+      window.setTimeout(() => {
+        coursesModal.querySelector(".review-modal__close")?.focus();
+      }, 100);
+    } else {
+      coursesModalLastFocus?.focus();
+    }
+  }
+
+  coursesOpenButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setCoursesModalState(true);
+    });
+  });
+
+  coursesCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setCoursesModalState(false);
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && coursesModal.classList.contains("is-open")) {
+      setCoursesModalState(false);
+    }
+  });
+}
+
+/* =========================================
+   PRACTICES MODAL
+========================================= */
+
+const practicesModal = document.querySelector("[data-practices-modal]");
+
+if (practicesModal) {
+  const practicesOpenButtons = document.querySelectorAll(
+    "[data-practices-open]",
+  );
+
+  const practicesCloseButtons = practicesModal.querySelectorAll(
+    "[data-practices-close]",
+  );
+
+  let practicesModalLastFocus = null;
+
+  function setPracticesModalState(isOpen) {
+    practicesModal.classList.toggle("is-open", isOpen);
+
+    practicesModal.setAttribute("aria-hidden", String(!isOpen));
+
+    document.body.classList.toggle("modal-open", isOpen);
+
+    if (isOpen) {
+      practicesModalLastFocus = document.activeElement;
+
+      window.setTimeout(() => {
+        practicesModal.querySelector(".review-modal__close")?.focus();
+      }, 100);
+    } else {
+      practicesModalLastFocus?.focus();
+    }
+  }
+
+  practicesOpenButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setPracticesModalState(true);
+    });
+  });
+
+  practicesCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setPracticesModalState(false);
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "Escape" &&
+      practicesModal.classList.contains("is-open")
+    ) {
+      setPracticesModalState(false);
+    }
+  });
+}
+
+/* =========================================
+   SEMINARS MODAL
+========================================= */
+
+const seminarsModal = document.querySelector("[data-seminars-modal]");
+
+if (seminarsModal) {
+  const seminarsOpenButtons = document.querySelectorAll("[data-seminars-open]");
+
+  const seminarsCloseButtons = seminarsModal.querySelectorAll(
+    "[data-seminars-close]",
+  );
+
+  let seminarsModalLastFocus = null;
+
+  function setSeminarsModalState(isOpen) {
+    seminarsModal.classList.toggle("is-open", isOpen);
+
+    seminarsModal.setAttribute("aria-hidden", String(!isOpen));
+
+    document.body.classList.toggle("modal-open", isOpen);
+
+    if (isOpen) {
+      seminarsModalLastFocus = document.activeElement;
+
+      window.setTimeout(() => {
+        seminarsModal.querySelector(".review-modal__close")?.focus();
+      }, 100);
+    } else {
+      seminarsModalLastFocus?.focus();
+    }
+  }
+
+  seminarsOpenButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setSeminarsModalState(true);
+    });
+  });
+
+  seminarsCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setSeminarsModalState(false);
+    });
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && seminarsModal.classList.contains("is-open")) {
+      setSeminarsModalState(false);
+    }
+  });
+}
