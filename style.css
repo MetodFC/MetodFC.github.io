@@ -2030,6 +2030,9 @@ button {
   gap: 14px;
   margin-top: 58px;
 }
+#shop .formats__grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 .format-card {
   position: relative;
   min-width: 0;
@@ -2116,7 +2119,7 @@ button {
   min-height: 78px;
   margin: 0;
   color: var(--color-muted);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.65;
 }
 .format-card__list {
@@ -2129,7 +2132,7 @@ button {
   position: relative;
   padding-left: 23px;
   color: var(--color-muted);
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.55;
 }
 .format-card__list li + li {

@@ -1354,3 +1354,120 @@ if (seminarsModal) {
     }
   });
 }
+
+const form = document.querySelector("[data-contact-form]");
+const statusElement = form.querySelector("[data-form-status]");
+const submitButton = form.querySelector(".contact-form__submit");
+const submitText = form.querySelector("[data-submit-text]");
+
+const BOT_TOKEN = "8811529566:AAGDCnsH4SOPclUOZ8Ocl-6LJwdBMVh2BSQ";
+
+const CHAT_ID = "6461031424";
+
+form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  clearErrors();
+  statusElement.textContent = "";
+
+  const formData = new FormData(form);
+
+  const name = String(formData.get("name") || "").trim();
+  const phone = String(formData.get("phone") || "").trim();
+  const email = String(formData.get("email") || "").trim();
+  const interest = String(formData.get("interest") || "").trim();
+  const message = String(formData.get("message") || "").trim();
+  const agreement = formData.get("agreement");
+
+  let hasError = false;
+
+  if (!name) {
+    showError("name", "Вкажіть ваше ім’я");
+    hasError = true;
+  }
+
+  if (!phone) {
+    showError("phone", "Вкажіть номер телефону");
+    hasError = true;
+  }
+
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showError("email", "Вкажіть коректний email");
+    hasError = true;
+  }
+
+  if (!agreement) {
+    showError("agreement", "Потрібна згода на обробку персональних даних");
+    hasError = true;
+  }
+
+  if (hasError) {
+    statusElement.textContent = "Перевірте заповнені поля.";
+    return;
+  }
+
+  const telegramText = [
+    "📩 Нова заявка із сайту",
+    "",
+    `👤 Ім’я: ${name}`,
+    `📞 Телефон: ${phone}`,
+    `✉️ Email: ${email || "Не вказано"}`,
+    `📌 Цікавить: ${interest || "Не вказано"}`,
+    "",
+    "💬 Повідомлення:",
+    message || "Не вказано",
+  ].join("\n");
+
+  submitButton.disabled = true;
+  submitText.textContent = "Надсилання...";
+  statusElement.textContent = "Надсилаємо заявку...";
+
+  try {
+    const response = await fetch(
+      `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: telegramText,
+        }),
+      },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok || !result.ok) {
+      console.error("Telegram error:", result);
+      throw new Error(result.description || "Помилка Telegram");
+    }
+
+    statusElement.textContent = "Дякуємо! Заявку успішно надіслано.";
+
+    form.reset();
+  } catch (error) {
+    console.error(error);
+
+    statusElement.textContent =
+      "Не вдалося надіслати заявку. Перевірте токен і Chat ID.";
+  } finally {
+    submitButton.disabled = false;
+    submitText.textContent = "Надіслати заявку";
+  }
+});
+
+function showError(fieldName, message) {
+  const errorElement = form.querySelector(`[data-error-for="${fieldName}"]`);
+
+  if (errorElement) {
+    errorElement.textContent = message;
+  }
+}
+
+function clearErrors() {
+  form.querySelectorAll("[data-error-for]").forEach((element) => {
+    element.textContent = "";
+  });
+}
