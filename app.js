@@ -232,131 +232,6 @@ if (journeySection) {
 
   updateJourneyProgress();
 }
-/* =========================================
-   EVENTS CAROUSEL
-========================================= */
-
-const eventsSlider = document.querySelector("[data-events-slider]");
-
-if (eventsSlider) {
-  const track = eventsSlider.querySelector("[data-events-track]");
-  const slides = Array.from(
-    eventsSlider.querySelectorAll("[data-event-slide]"),
-  );
-
-  const previousButton = eventsSlider.querySelector("[data-events-prev]");
-  const nextButton = eventsSlider.querySelector("[data-events-next]");
-  const pagination = eventsSlider.querySelector("[data-events-pagination]");
-  const currentElement = eventsSlider.querySelector("[data-events-current]");
-  const totalElement = eventsSlider.querySelector("[data-events-total]");
-
-  let currentIndex = 0;
-  let touchStartX = 0;
-  let touchEndX = 0;
-
-  function formatSlideNumber(number) {
-    return String(number).padStart(2, "0");
-  }
-
-  if (totalElement) {
-    totalElement.textContent = formatSlideNumber(slides.length);
-  }
-
-  const paginationButtons = slides.map((_, index) => {
-    const button = document.createElement("button");
-
-    button.className = "events-slider__dot";
-    button.type = "button";
-    button.setAttribute("aria-label", `Перейти до події ${index + 1}`);
-
-    button.addEventListener("click", () => {
-      goToSlide(index);
-    });
-
-    pagination?.append(button);
-
-    return button;
-  });
-
-  function goToSlide(index) {
-    if (!slides.length || !track) return;
-
-    currentIndex = (index + slides.length) % slides.length;
-
-    track.style.transform = `translateX(-${currentIndex * 100}%)`;
-
-    slides.forEach((slide, slideIndex) => {
-      const isActive = slideIndex === currentIndex;
-
-      slide.classList.toggle("is-active", isActive);
-      slide.setAttribute("aria-hidden", String(!isActive));
-    });
-
-    paginationButtons.forEach((button, buttonIndex) => {
-      const isActive = buttonIndex === currentIndex;
-
-      button.classList.toggle("is-active", isActive);
-      button.setAttribute("aria-current", isActive ? "true" : "false");
-    });
-
-    if (currentElement) {
-      currentElement.textContent = formatSlideNumber(currentIndex + 1);
-    }
-  }
-
-  function showPreviousSlide() {
-    goToSlide(currentIndex - 1);
-  }
-
-  function showNextSlide() {
-    goToSlide(currentIndex + 1);
-  }
-
-  previousButton?.addEventListener("click", showPreviousSlide);
-  nextButton?.addEventListener("click", showNextSlide);
-
-  eventsSlider.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") {
-      showPreviousSlide();
-    }
-
-    if (event.key === "ArrowRight") {
-      showNextSlide();
-    }
-  });
-
-  eventsSlider.addEventListener(
-    "touchstart",
-    (event) => {
-      touchStartX = event.changedTouches[0].clientX;
-    },
-    {
-      passive: true,
-    },
-  );
-
-  eventsSlider.addEventListener(
-    "touchend",
-    (event) => {
-      touchEndX = event.changedTouches[0].clientX;
-
-      const swipeDistance = touchStartX - touchEndX;
-
-      if (Math.abs(swipeDistance) < 50) return;
-
-      if (swipeDistance > 0) {
-        showNextSlide();
-      } else {
-        showPreviousSlide();
-      }
-    },
-    {
-      passive: true,
-    },
-  );
-
-  goToSlide(0);
-}
 
 /* =========================================
    REVIEWS CAROUSEL
@@ -1469,5 +1344,409 @@ function showError(fieldName, message) {
 function clearErrors() {
   form.querySelectorAll("[data-error-for]").forEach((element) => {
     element.textContent = "";
+  });
+}
+
+/* =========================================
+   ЗАПЛАНОВАНІ ПОДІЇ — КАРУСЕЛЬ
+========================================= */
+
+const eventsSlider = document.querySelector("[data-events-slider]");
+
+if (eventsSlider) {
+  const track = eventsSlider.querySelector("[data-events-track]");
+
+  const slides = Array.from(
+    eventsSlider.querySelectorAll("[data-event-slide]"),
+  );
+
+  const previousButton = eventsSlider.querySelector("[data-events-prev]");
+  const nextButton = eventsSlider.querySelector("[data-events-next]");
+
+  const pagination = eventsSlider.querySelector("[data-events-pagination]");
+
+  const currentElement = eventsSlider.querySelector("[data-events-current]");
+
+  const totalElement = eventsSlider.querySelector("[data-events-total]");
+
+  const mobileMedia = window.matchMedia("(max-width: 760px)");
+
+  let currentPage = 0;
+  let paginationButtons = [];
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  function getSlidesPerPage() {
+    return mobileMedia.matches ? 1 : 3;
+  }
+
+  function getPageCount() {
+    return Math.ceil(slides.length / getSlidesPerPage());
+  }
+
+  function formatNumber(number) {
+    return String(number).padStart(2, "0");
+  }
+
+  function normalizePage(page) {
+    const pageCount = getPageCount();
+
+    if (!pageCount) return 0;
+
+    return (page + pageCount) % pageCount;
+  }
+
+  function createPagination() {
+    if (!pagination) return;
+
+    pagination.innerHTML = "";
+    paginationButtons = [];
+
+    for (let index = 0; index < getPageCount(); index += 1) {
+      const button = document.createElement("button");
+
+      button.className = "events-slider__dot";
+      button.type = "button";
+
+      button.setAttribute("aria-label", `Перейти до групи подій ${index + 1}`);
+
+      button.addEventListener("click", () => {
+        goToPage(index);
+      });
+
+      pagination.append(button);
+      paginationButtons.push(button);
+    }
+  }
+
+  function updateSlidesState() {
+    const slidesPerPage = getSlidesPerPage();
+    const firstVisibleSlide = currentPage * slidesPerPage;
+    const lastVisibleSlide = firstVisibleSlide + slidesPerPage;
+
+    slides.forEach((slide, index) => {
+      const isVisible = index >= firstVisibleSlide && index < lastVisibleSlide;
+
+      slide.classList.toggle("is-active", isVisible);
+      slide.setAttribute("aria-hidden", String(!isVisible));
+    });
+  }
+
+  function updatePagination() {
+    paginationButtons.forEach((button, index) => {
+      const isActive = index === currentPage;
+
+      button.classList.toggle("is-active", isActive);
+
+      button.setAttribute("aria-current", isActive ? "true" : "false");
+    });
+  }
+
+  function updateCounter() {
+    if (currentElement) {
+      currentElement.textContent = formatNumber(currentPage + 1);
+    }
+
+    if (totalElement) {
+      totalElement.textContent = formatNumber(getPageCount());
+    }
+  }
+
+  function updatePosition() {
+    if (!track) return;
+
+    track.style.transform = `translate3d(-${currentPage * 100}%, 0, 0)`;
+  }
+
+  function updateSlider() {
+    currentPage = normalizePage(currentPage);
+
+    updatePosition();
+    updateSlidesState();
+    updatePagination();
+    updateCounter();
+  }
+
+  function goToPage(page) {
+    currentPage = normalizePage(page);
+    updateSlider();
+  }
+
+  function showPreviousPage() {
+    goToPage(currentPage - 1);
+  }
+
+  function showNextPage() {
+    goToPage(currentPage + 1);
+  }
+
+  previousButton?.addEventListener("click", showPreviousPage);
+  nextButton?.addEventListener("click", showNextPage);
+
+  eventsSlider.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") {
+      showPreviousPage();
+    }
+
+    if (event.key === "ArrowRight") {
+      showNextPage();
+    }
+  });
+
+  eventsSlider.addEventListener(
+    "touchstart",
+    (event) => {
+      touchStartX = event.changedTouches[0].clientX;
+    },
+    {
+      passive: true,
+    },
+  );
+
+  eventsSlider.addEventListener(
+    "touchend",
+    (event) => {
+      touchEndX = event.changedTouches[0].clientX;
+
+      const swipeDistance = touchStartX - touchEndX;
+
+      if (Math.abs(swipeDistance) < 50) return;
+
+      if (swipeDistance > 0) {
+        showNextPage();
+      } else {
+        showPreviousPage();
+      }
+    },
+    {
+      passive: true,
+    },
+  );
+
+  function handleLayoutChange() {
+    currentPage = 0;
+    createPagination();
+    updateSlider();
+  }
+
+  if (typeof mobileMedia.addEventListener === "function") {
+    mobileMedia.addEventListener("change", handleLayoutChange);
+  } else {
+    mobileMedia.addListener(handleLayoutChange);
+  }
+
+  createPagination();
+  updateSlider();
+}
+
+/* =========================================
+   CONTACT MODAL
+========================================= */
+
+const contactModal = document.querySelector("[data-contact-modal]");
+
+if (contactModal) {
+  const openButtons = document.querySelectorAll("[data-contact-modal-open]");
+
+  const closeButtons = contactModal.querySelectorAll(
+    "[data-contact-modal-close]",
+  );
+
+  const modalForm = contactModal.querySelector("[data-modal-contact-form]");
+
+  const topicOutput = contactModal.querySelector("[data-contact-modal-topic]");
+
+  const topicInput = contactModal.querySelector(
+    "[data-contact-modal-topic-input]",
+  );
+
+  const statusElement = contactModal.querySelector("[data-modal-form-status]");
+
+  const submitButton = modalForm?.querySelector(".contact-form__submit");
+
+  const submitText = modalForm?.querySelector("[data-modal-submit-text]");
+
+  let lastFocusedElement = null;
+
+  function openContactModal(topic = "") {
+    lastFocusedElement = document.activeElement;
+
+    contactModal.classList.add("is-open");
+    contactModal.setAttribute("aria-hidden", "false");
+    document.body.classList.add("modal-open");
+
+    if (topicOutput) {
+      topicOutput.textContent = topic;
+    }
+
+    if (topicInput) {
+      topicInput.value = topic;
+    }
+
+    window.setTimeout(() => {
+      modalForm?.elements.namedItem("name")?.focus();
+    }, 100);
+  }
+
+  function closeContactModal() {
+    contactModal.classList.remove("is-open");
+    contactModal.setAttribute("aria-hidden", "true");
+    document.body.classList.remove("modal-open");
+
+    lastFocusedElement?.focus();
+  }
+
+  openButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const topic = button.dataset.contactTopic?.trim() || "";
+
+      openContactModal(topic);
+    });
+  });
+
+  closeButtons.forEach((button) => {
+    button.addEventListener("click", closeContactModal);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && contactModal.classList.contains("is-open")) {
+      closeContactModal();
+    }
+  });
+
+  function getField(name) {
+    return modalForm?.elements.namedItem(name);
+  }
+
+  function setFieldError(name, message = "") {
+    const field = getField(name);
+
+    const errorElement = contactModal.querySelector(
+      `[data-modal-error-for="${name}"]`,
+    );
+
+    field
+      ?.closest(".form-field")
+      ?.classList.toggle("is-invalid", Boolean(message));
+
+    if (errorElement) {
+      errorElement.textContent = message;
+    }
+  }
+
+  function clearErrors() {
+    ["name", "phone", "email", "agreement"].forEach((name) => {
+      setFieldError(name);
+    });
+  }
+
+  function validateForm() {
+    clearErrors();
+
+    const name = getField("name")?.value.trim() ?? "";
+    const phone = getField("phone")?.value.trim() ?? "";
+    const email = getField("email")?.value.trim() ?? "";
+    const agreement = getField("agreement")?.checked;
+
+    let isValid = true;
+
+    if (name.length < 2) {
+      setFieldError("name", "Вкажіть, будь ласка, ваше ім’я.");
+
+      isValid = false;
+    }
+
+    if (phone.replace(/\D/g, "").length < 9) {
+      setFieldError("phone", "Вкажіть коректний номер телефону.");
+
+      isValid = false;
+    }
+
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setFieldError("email", "Перевірте правильність email.");
+
+      isValid = false;
+    }
+
+    if (!agreement) {
+      setFieldError("agreement", "Потрібна згода на обробку даних.");
+
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function setStatus(type, message) {
+    if (!statusElement) return;
+
+    statusElement.className = `contact-form__status is-visible is-${type}`;
+
+    statusElement.textContent = message;
+  }
+
+  function setLoading(isLoading) {
+    if (submitButton) {
+      submitButton.disabled = isLoading;
+    }
+
+    if (submitText) {
+      submitText.textContent = isLoading ? "Надсилаємо..." : "Надіслати заявку";
+    }
+  }
+
+  modalForm?.addEventListener("input", (event) => {
+    const name = event.target.name;
+
+    if (name) {
+      setFieldError(name);
+    }
+  });
+
+  modalForm?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (!validateForm()) return;
+
+    const formData = new FormData(modalForm);
+
+    const payload = {
+      name: formData.get("name"),
+      phone: formData.get("phone"),
+      email: formData.get("email") || "Не вказано",
+      interest: formData.get("topic") || "Загальний запит",
+      message: formData.get("message") || "Без повідомлення",
+    };
+
+    setLoading(true);
+
+    if (statusElement) {
+      statusElement.className = "contact-form__status";
+      statusElement.textContent = "";
+    }
+
+    try {
+      const response = await fetch("/api/send-telegram", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
+
+      modalForm.reset();
+
+      setStatus("success", "Дякуємо! Ваша заявка успішно надіслана.");
+    } catch (error) {
+      console.error("Modal contact form error:", error);
+
+      setStatus("error", "Не вдалося надіслати заявку. Спробуйте ще раз.");
+    } finally {
+      setLoading(false);
+    }
   });
 }
