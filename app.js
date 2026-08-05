@@ -1750,3 +1750,139 @@ if (contactModal) {
     }
   });
 }
+/* =========================================
+   PAYMENT MODAL
+========================================= */
+
+const paymentModal = document.querySelector("[data-payment-modal]");
+
+if (paymentModal) {
+  const paymentOpenButtons = document.querySelectorAll(".pay-btn");
+
+  const paymentCloseButtons = paymentModal.querySelectorAll(
+    "[data-payment-close]",
+  );
+
+  const paymentCopyButtons = paymentModal.querySelectorAll("[data-copy-value]");
+
+  const paymentCopyAllButton = paymentModal.querySelector(
+    "[data-copy-all-payment]",
+  );
+
+  let paymentModalLastFocus = null;
+
+  function setPaymentModalState(isOpen) {
+    paymentModal.classList.toggle("is-open", isOpen);
+    paymentModal.setAttribute("aria-hidden", String(!isOpen));
+    document.body.classList.toggle("modal-open", isOpen);
+
+    if (isOpen) {
+      paymentModalLastFocus = document.activeElement;
+
+      window.setTimeout(() => {
+        paymentModal.querySelector(".review-modal__close")?.focus();
+      }, 100);
+    } else {
+      paymentModalLastFocus?.focus();
+    }
+  }
+
+  async function copyPaymentText(value) {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(value);
+      return;
+    }
+
+    const temporaryTextarea = document.createElement("textarea");
+
+    temporaryTextarea.value = value;
+    temporaryTextarea.setAttribute("readonly", "");
+    temporaryTextarea.style.position = "fixed";
+    temporaryTextarea.style.left = "-9999px";
+    temporaryTextarea.style.opacity = "0";
+
+    document.body.append(temporaryTextarea);
+
+    temporaryTextarea.select();
+    document.execCommand("copy");
+
+    temporaryTextarea.remove();
+  }
+
+  function showCopiedState(button, textElement, message) {
+    const originalText = textElement.textContent;
+
+    button.classList.add("is-copied");
+    textElement.textContent = message;
+
+    window.setTimeout(() => {
+      button.classList.remove("is-copied");
+      textElement.textContent = originalText;
+    }, 1800);
+  }
+
+  paymentOpenButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      setPaymentModalState(true);
+    });
+  });
+
+  paymentCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      setPaymentModalState(false);
+    });
+  });
+
+  paymentCopyButtons.forEach((button) => {
+    button.addEventListener("click", async () => {
+      const value = button.dataset.copyValue;
+      const textElement = button.querySelector("[data-copy-text]");
+
+      if (!value || !textElement) return;
+
+      try {
+        await copyPaymentText(value);
+
+        showCopiedState(button, textElement, "Скопійовано");
+      } catch (error) {
+        console.error("Помилка копіювання:", error);
+        textElement.textContent = "Помилка";
+      }
+    });
+  });
+
+  paymentCopyAllButton?.addEventListener("click", async () => {
+    const textElement = paymentCopyAllButton.querySelector(
+      "[data-copy-all-text]",
+    );
+
+    if (!textElement) return;
+
+    const paymentDetails = [
+      "IBAN: UA593220010000026007370090652",
+      "ЄДРПОУ: 2575503528",
+      "Отримувач: ФОП Багрій Наталія Володимирівна",
+      "Призначення платежу: За послуги",
+    ].join("\n");
+
+    try {
+      await copyPaymentText(paymentDetails);
+
+      showCopiedState(
+        paymentCopyAllButton,
+        textElement,
+        "Реквізити скопійовано",
+      );
+    } catch (error) {
+      console.error("Помилка копіювання:", error);
+      textElement.textContent = "Не вдалося скопіювати";
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && paymentModal.classList.contains("is-open")) {
+      setPaymentModalState(false);
+    }
+  });
+}
