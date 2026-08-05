@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="description"
+      content="Атлас коліркодів для візуального налаштування на потік Методу Фрактальних Копій."
+    />
+
+    <meta name="theme-color" content="#fcfbfa" />
+
+    <title>Атлас коліркодів — Метод Фрактальних Копій</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Основні стилі сайту -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Стилі окремої сторінки -->
+    <link rel="stylesheet" href="atlas.css" />
+  </head>
+
+  <body class="atlas-page">
+    <header class="atlas-header" data-atlas-header>
+      <div class="wrapper atlas-header__inner">
+        <a
+          class="atlas-logo"
+          href="index.html"
+          aria-label="Повернутися на головну"
+        >
+          <span class="atlas-logo__symbol" aria-hidden="true">
+            <img src="img/logo.png" alt="" />
+          </span>
+
+          <span class="atlas-logo__copy">
+            <strong>Метод Фрактальних Копій</strong>
+            <small>від першого провідника Наталії Багрій</small>
+          </span>
+        </a>
+
+        <a class="atlas-back" href="index.html">
+          <span class="atlas-back__arrow" aria-hidden="true"></span>
+          <span>Повернутися на головну</span>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section class="atlas-hero">
+        <div
+          class="atlas-hero__glow atlas-hero__glow--one"
+          aria-hidden="true"
+        ></div>
+        <div
+          class="atlas-hero__glow atlas-hero__glow--two"
+          aria-hidden="true"
+        ></div>
+        <div class="atlas-hero__grain" aria-hidden="true"></div>
+
+        <div class="wrapper atlas-hero__inner">
+          <div class="atlas-hero__content">
+            <p class="eyebrow atlas-hero__eyebrow">Закритий матеріал</p>
+
+            <h1 class="atlas-hero__title">
+              <span>Атлас <em>коліркодів</em></span>
+              <span>для візуального налаштування</span>
+              <span>на потік</span>
+            </h1>
+
+            <p class="atlas-hero__subtitle">Методу Фрактальних Копій</p>
+
+            <p class="atlas-hero__text">
+              Переглядайте коліркоди у спокійному темпі. Дозвольте увазі
+              зупинитися на зображенні, яке відгукується саме зараз.
+            </p>
+          </div>
+
+          <div class="atlas-hero__visual" aria-hidden="true">
+            <span class="atlas-orbit atlas-orbit--one"></span>
+            <span class="atlas-orbit atlas-orbit--two"></span>
+            <span class="atlas-orbit atlas-orbit--three"></span>
+            <span class="atlas-orbit__center"></span>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="atlas-gallery"
+        id="atlas-gallery"
+        aria-labelledby="atlas-gallery-title"
+      >
+        <div class="wrapper">
+          <div class="atlas-gallery__head">
+            <div>
+              <p class="eyebrow">Колекція</p>
+
+              <h2 class="atlas-gallery__title" id="atlas-gallery-title">
+                36 коліркодів
+              </h2>
+            </div>
+
+            <p class="atlas-gallery__intro">
+              Використовуйте стрілки, клавіші клавіатури або свайп на
+              мобільному. Натисніть на зображення, щоб відкрити його на весь
+              екран.
+            </p>
+          </div>
+
+          <div
+            class="atlas-slider"
+            data-atlas-slider
+            tabindex="0"
+            aria-label="Карусель коліркодів"
+          >
+            <button
+              class="events-slider__arrow events-slider__arrow--prev"
+              type="button"
+              data-atlas-prev
+              aria-label="Попередні зображення"
+            >
+              <span aria-hidden="true"></span>
+            </button>
+
+            <div class="atlas-slider__viewport" data-atlas-viewport>
+              <div class="atlas-slider__track" data-atlas-track></div>
+            </div>
+
+            <button
+              class="events-slider__arrow events-slider__arrow--next"
+              type="button"
+              data-atlas-next
+              aria-label="Наступні зображення"
+            >
+              <span aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <div class="atlas-slider__footer">
+            <div class="atlas-slider__counter" aria-live="polite">
+              <span data-atlas-current>01</span>
+              <i></i>
+              <span data-atlas-total>08</span>
+            </div>
+
+            <div
+              class="atlas-slider__pagination"
+              data-atlas-pagination
+              aria-label="Навігація каруселі"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="atlas-note">
+        <div class="wrapper atlas-note__inner">
+          <span class="atlas-note__line" aria-hidden="true"></span>
+
+          <p>
+            Залишайтеся із зображенням стільки часу, скільки відчувається
+            комфортно. Тут не потрібно поспішати або шукати правильну відповідь.
+          </p>
+
+          <span class="atlas-note__line" aria-hidden="true"></span>
+        </div>
+      </section>
+    </main>
+
+    <footer class="atlas-footer">
+      <div class="wrapper atlas-footer__inner">
+        <a class="atlas-footer__logo" href="index.html">
+          Метод Фрактальних Копій
+        </a>
+
+        <p>Атлас коліркодів</p>
+      </div>
+    </footer>
+
+    <div
+      class="atlas-lightbox"
+      data-atlas-lightbox
+      aria-hidden="true"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Перегляд коліркоду"
+    >
+      <button
+        class="atlas-lightbox__backdrop"
+        type="button"
+        data-lightbox-close
+        aria-label="Закрити перегляд"
+      ></button>
+
+      <div class="atlas-lightbox__dialog">
+        <button
+          class="atlas-lightbox__close"
+          type="button"
+          data-lightbox-close
+          aria-label="Закрити"
+        >
+          <span></span>
+          <span></span>
+        </button>
+
+        <button
+          class="atlas-lightbox__arrow atlas-lightbox__arrow--prev"
+          type="button"
+          data-lightbox-prev
+          aria-label="Попередній коліркод"
+        >
+          <span></span>
+        </button>
+
+        <figure class="atlas-lightbox__figure">
+          <img data-lightbox-image src="" alt="" />
+
+          <figcaption>
+            Коліркод
+            <span data-lightbox-number>01</span>
+            <span class="atlas-lightbox__divider">/</span>
+            <span>36</span>
+          </figcaption>
+        </figure>
+
+        <button
+          class="atlas-lightbox__arrow atlas-lightbox__arrow--next"
+          type="button"
+          data-lightbox-next
+          aria-label="Наступний коліркод"
+        >
+          <span></span>
+        </button>
+      </div>
+    </div>
+    <!-- <script src="app.js"></script> -->
+
+    <script src="atlas.js"></script>
+  </body>
+</html>
