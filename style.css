@@ -4045,7 +4045,7 @@ button {
 .contact-item__value {
   color: var(--color-primary);
   font-family: var(--font-display);
-  font-size: clamp(22px, 2vw, 30px);
+  font-size: 18px;
   line-height: 1;
 }
 
@@ -4702,7 +4702,6 @@ button {
   }
 
   .contact-item__value {
-    font-size: 23px;
     overflow-wrap: anywhere;
   }
 
